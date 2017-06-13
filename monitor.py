@@ -68,7 +68,6 @@ def updateTrade(tradeId, stopPrice, instrument):
         response = requests.put(update_url,data=payload, headers=headers)
 
         if response.status_code == 200:
-            print response.json()
             logging.info("Update trade : Successful")
         else:
             logging.info("Update trade : Failed [" +  response.json()['errorMessage'] +  "]")
@@ -91,15 +90,18 @@ def analyze():
         price = float(trade['price'])
         instrument = trade['instrument']
 
+        #logging.info("trade=" + trade_id +  ", units=" + str(units) + ", instrument=" + instrument + " @" +  str(price))
 
-        logging.info("trade=" + trade_id +  ", units=" + str(units) + ", instrument=" + instrument + " @" +  str(price))
 
         # Check for the unrealized profit greater than $1.
         # We only interested on any trades at profit
-        if unrealized_pl > 0:
+        if unrealized_pl > 2:
+
             target_profit = unrealized_pl - MARGIN
             target_unit_profit = target_profit / units
             target_unit_price = price + target_unit_profit
+
+            logging.info("trade" + trade_id + ", " + str(price) + "->"+ str(target_unit_price))
 
             # Only update if current stop price is less that traget price
             if 'stopLossOrder' in trade:
