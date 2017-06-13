@@ -12,7 +12,7 @@ access:
     server:  'https://api-fxtrade.oanda.com'
     account: 'xxx-xxx-xxxxxx-xxx'
 
-simulate: true
+simulate: 'yes'
 
 margin: 2
 
