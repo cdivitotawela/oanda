@@ -26,7 +26,7 @@ environment = config['environment']
 MARGIN = float(config['margin'])
 
 # Whether update is simulated
-SIMULATE = bool(config['simulate'])
+SIMULATE = config['simulate']
 
 # Instruments precision
 INSTRUMENTS = { 'BCO_USD': 3, 'NATGAS_USD': 3}
@@ -62,7 +62,9 @@ def updateTrade(tradeId, stopPrice, instrument):
     update_url = trade_url + "/" + tradeId + "/orders"
     payload = '{ "stopLoss": { "price" : "' + str(stopPrice) + '"} }'
 
-    if SIMULATE:
+    if SIMULATE == 'yes':
+        logging.info("Simuating update trade stop value to " + str(stopPrice))
+    else:
         response = requests.put(update_url,data=payload, headers=headers)
 
         if response.status_code == 200:
@@ -70,8 +72,7 @@ def updateTrade(tradeId, stopPrice, instrument):
             logging.info("Update trade : Successful")
         else:
             logging.info("Update trade : Failed [" +  response.json()['errorMessage'] +  "]")
-    else:
-        logging.info("Simuating update trade stop value to " + str(stopPrice))
+
 
 
 # Collect the active trades
@@ -95,22 +96,24 @@ def analyze():
 
         # Check for the unrealized profit greater than $1.
         # We only interested on any trades at profit
-        if unrealized_pl > -100:
+        if unrealized_pl > 0:
             target_profit = unrealized_pl - MARGIN
             target_unit_profit = target_profit / units
             target_unit_price = price + target_unit_profit
 
             # Only update if current stop price is less that traget price
-            if trade['stopLossOrder']:
+            if 'stopLossOrder' in trade:
                 current_stop_price = float(trade['stopLossOrder']['price'])
                 logging.info("current_stop_loss=" + str(current_stop_price) + ", target_stop_loss=" + str(target_unit_price))
                 if current_stop_price < target_unit_price:
                     updateTrade(trade_id, target_unit_price, instrument)
+            else:
+                updateTrade(trade_id, target_unit_price, instrument)
 
 
 # Continous loop
 while (1 == 1):
-    if SIMULATE:
+    if SIMULATE == 'yes':
         logging.info("Starting analysis [Simulated]")
     else:
         logging.info("Starting analysis")
