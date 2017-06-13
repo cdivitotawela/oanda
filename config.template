@@ -1,0 +1,19 @@
+---
+environment: 'practice'
+
+access:
+  practice:
+    token:   'xxxxx-xxxx'
+    server:  'https://api-fxpractice.oanda.com'
+    account: 'xxx-xxx-xxxxxx-xxx'
+
+  'trade':
+    token:   'xxxxx-xxxx'
+    server:  'https://api-fxtrade.oanda.com'
+    account: 'xxx-xxx-xxxxxx-xxx'
+
+simulate: true
+
+margin: 2
+
+sleep: 10
