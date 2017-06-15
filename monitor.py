@@ -74,12 +74,14 @@ def updateTrade(tradeId, stopPrice, instrument):
 
 
 
-# Collect the active trades
-trades = getTrades()
+
 
 
 # Perform analysis
 def analyze():
+    # Collect the active trades
+    trades = getTrades()
+    logging.info("Number of trades [" + str(len(trades)) + "]")
 
     # Iterate the trades and analyze each
     for trade in trades:
@@ -90,12 +92,12 @@ def analyze():
         price = float(trade['price'])
         instrument = trade['instrument']
 
-        #logging.info("trade=" + trade_id +  ", units=" + str(units) + ", instrument=" + instrument + " @" +  str(price))
+        #logging.info("trade=" + trade_id +  ", units=" + str(units) + ", unrealized=" + str(unrealized_pl) + ", instrument=" + instrument + " @" +  str(price))
 
 
         # Check for the unrealized profit greater than $1.
         # We only interested on any trades at profit
-        if unrealized_pl > 2:
+        if unrealized_pl > 3:
 
             target_profit = unrealized_pl - MARGIN
             target_unit_profit = target_profit / units
@@ -112,16 +114,14 @@ def analyze():
             else:
                 updateTrade(trade_id, target_unit_price, instrument)
 
+# -- Main --
+
+if SIMULATE == 'yes':
+    logging.info("** Simulated **")
 
 # Continous loop
 while (1 == 1):
-    if SIMULATE == 'yes':
-        logging.info("Starting analysis [Simulated]")
-    else:
-        logging.info("Starting analysis")
-
     analyze()
-    logging.info("Complete")
     sleep(SLEEP)
 
 
